@@ -7,7 +7,7 @@
 #include "main.h"
 
 #define LENGTH 67108864
-#define CNT 128
+#define CNT 1024
 
 uint8_t src_arr[LENGTH];
 float buf[LENGTH];
