@@ -13,6 +13,8 @@ void general(const uint8_t *src, float *dst, size_t length);
 
 void look_up_list(const uint8_t *src, float *dst, size_t length);
 
+#ifdef __AVX512F__
 void avx(const uint8_t *src, float *dst, size_t length);
+#endif
 
 #endif//_MAIN_H_

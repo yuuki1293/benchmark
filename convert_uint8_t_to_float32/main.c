@@ -16,9 +16,12 @@ int main()
 {
     init(src_arr, LENGTH);
 
-    // bench(general, "general\t");
-    // bench(look_up_list, "lut\t");
+    bench(general, "general\t");
+    bench(look_up_list, "lut\t");
+
+#ifdef __AVX512F__
     bench(avx, "avx\t");
+#endif
 
     return 0;
 }
@@ -64,6 +67,7 @@ void look_up_list(const uint8_t *src, float *dst, size_t length)
     }
 }
 
+#ifdef __AVX512F__
 void  avx(const uint8_t *src, float *dst, size_t length)
 {
     while (4 >= length)
@@ -79,3 +83,4 @@ void  avx(const uint8_t *src, float *dst, size_t length)
         length--;
     }
 }
+#endif
