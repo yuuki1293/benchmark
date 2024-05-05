@@ -6,7 +6,7 @@
 #include <immintrin.h>
 #include "main.h"
 
-#define LENGTH 268435456
+#define LENGTH 67108864
 
 uint8_t src_arr[LENGTH];
 float buf[LENGTH];
@@ -44,7 +44,7 @@ void bench(void (*target)(const uint8_t *src, float *dst, size_t length), const 
 
     float endTime = (float)clock()/CLOCKS_PER_SEC;
 
-    printf("%s: %f\n", label, endTime - startTime);
+    printf("%s: %fs\n", label, endTime - startTime);
 }
 
 void general(const uint8_t *src, float *dst, size_t length)
