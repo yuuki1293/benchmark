@@ -8,8 +8,8 @@
 
 #define LENGTH 268435456
 
-uint8_t src_arr[LENGTH + 256];
-float buf[LENGTH + 256];
+uint8_t src_arr[LENGTH];
+float buf[LENGTH];
 
 
 int main()
@@ -21,6 +21,8 @@ int main()
 
 #ifdef __AVX512F__
     bench(avx, "avx\t");
+    bench(avx2, "avx2\t");
+    bench(avx512, "avx512\t");
 #endif
 
     return 0;
@@ -68,8 +70,62 @@ void look_up_list(const uint8_t *src, float *dst, size_t length)
 }
 
 #ifdef __AVX512F__
-void  avx(const uint8_t *src, float *dst, size_t length)
+void avx(const uint8_t *src, float *dst, size_t length)
 {
+    while (4 >= length)
+    {
+        *(__m128*)(dst) = _mm_cvtepu32_ps(_mm_cvtepu8_epi32(*(__m128i*)src));
+        src += 4;
+        dst += 4;
+        length -=4;
+    }
+    while (length > 0)
+    {
+        *dst++ = *src++;
+        length--;
+    }
+}
+
+void avx2(const uint8_t *src, float *dst, size_t length)
+{
+    
+    while (8 >= length)
+    {
+        *(__m256*)(dst) = _mm256_cvtepu32_ps(_mm256_cvtepu8_epi32(*(__m256i*)src));
+        src += 8;
+        dst += 8;
+        length -=8;
+    }
+    while (4 >= length)
+    {
+        *(__m128*)(dst) = _mm_cvtepu32_ps(_mm_cvtepu8_epi32(*(__m128i*)src));
+        src += 4;
+        dst += 4;
+        length -=4;
+    }
+    while (length > 0)
+    {
+        *dst++ = *src++;
+        length--;
+    }
+}
+
+void avx512(const uint8_t *src, float *dst, size_t length)
+{
+    while (16 >= length)
+    {
+        *(__mm512*)(dst) = _mm512_cvtepu32_ps(_mm512_cvtepu8_epi32(*(__m512i*)src));
+        src += 16;
+        dst += 16;
+        length -=16;
+    }
+    while (8 >= length)
+    {
+        *(__m256*)(dst) = _mm256_cvtepu32_ps(_mm256_cvtepu8_epi32(*(__m256i*)src));
+        src += 8;
+        dst += 8;
+        length -=8;
+    }
     while (4 >= length)
     {
         *(__m128*)(dst) = _mm_cvtepu32_ps(_mm_cvtepu8_epi32(*(__m128i*)src));
