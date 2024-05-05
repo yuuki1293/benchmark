@@ -13,4 +13,6 @@ void general(const uint8_t *src, float *dst, size_t length);
 
 void look_up_list(const uint8_t *src, float *dst, size_t length);
 
+void avx(const uint8_t *src, float *dst, size_t length);
+
 #endif//_MAIN_H_

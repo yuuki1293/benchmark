@@ -3,20 +3,24 @@
 #include <time.h>
 #include <inttypes.h>
 #include <limits.h>
+#include <immintrin.h>
 #include "main.h"
 
 #define LENGTH 268435456
 
-uint8_t src_arr[LENGTH];
-float buf[LENGTH];
+uint8_t src_arr[LENGTH + 256];
+float buf[LENGTH + 256];
 
 
 int main()
 {
     init(src_arr, LENGTH);
 
-    bench(general, "general\t");
-    bench(look_up_list, "lut\t");
+    // bench(general, "general\t");
+    // bench(look_up_list, "lut\t");
+    bench(avx, "avx\t");
+
+    return 0;
 }
 
 void init(uint8_t *const src, size_t length)
@@ -60,3 +64,18 @@ void look_up_list(const uint8_t *src, float *dst, size_t length)
     }
 }
 
+void  avx(const uint8_t *src, float *dst, size_t length)
+{
+    while (4 >= length)
+    {
+        *(__m128*)(dst) = _mm_cvtepu32_ps(_mm_cvtepu8_epi32(*(__m128i*)src));
+        src += 4;
+        dst += 4;
+        length -=4;
+    }
+    while (length > 0)
+    {
+        *dst++ = *src++;
+        length--;
+    }
+}
