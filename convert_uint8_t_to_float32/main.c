@@ -7,7 +7,7 @@
 #include "main.h"
 
 #define LENGTH 67108864
-#define CNT 1024
+#define CNT 128
 
 uint8_t src_arr[LENGTH];
 float buf[LENGTH];
@@ -54,7 +54,7 @@ void bench(void (*target)(const uint8_t *src, float *dst, size_t length), const 
         fprintf(file, "%f\n", endTime - startTime);
         if (log)
         {
-            printf("(%d/%d)%s: %fs\n", i+1, count, label, endTime - startTime);
+            printf("(%ld/%ld)%s: %fs\n", i+1, count, label, endTime - startTime);
         }
     }
 
