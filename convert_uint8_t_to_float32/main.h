@@ -7,7 +7,7 @@
 
 void init(uint8_t *const src, size_t length);
 
-void bench(void (*target)(const uint8_t *src, float *dst, size_t length), const char* const label);
+void bench(void (*target)(const uint8_t *src, float *dst, size_t length), const char* const label, size_t count, int log);
 
 void general(const uint8_t *src, float *dst, size_t length);
 
@@ -15,6 +15,10 @@ void look_up_list(const uint8_t *src, float *dst, size_t length);
 
 #ifdef __AVX512F__
 void avx(const uint8_t *src, float *dst, size_t length);
+
+void avx2(const uint8_t *src, float *dst, size_t length);
+
+void avx512(const uint8_t *src, float *dst, size_t length);
 #endif
 
 #endif//_MAIN_H_

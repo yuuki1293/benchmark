@@ -7,6 +7,7 @@
 #include "main.h"
 
 #define LENGTH 67108864
+#define CNT 1024
 
 uint8_t src_arr[LENGTH];
 float buf[LENGTH];
@@ -16,13 +17,13 @@ int main()
 {
     init(src_arr, LENGTH);
 
-    bench(general, "general\t");
-    bench(look_up_list, "lut\t");
+    bench(general, "general", CNT, 1);
+    bench(look_up_list, "lut", CNT, 1);
 
 #ifdef __AVX512F__
-    bench(avx, "avx\t");
-    bench(avx2, "avx2\t");
-    bench(avx512, "avx512\t");
+    bench(avx, "avx", CNT, 1);
+    bench(avx2, "avx2", CNT, 1);
+    bench(avx512, "avx512", CNT, 1);
 #endif
 
     return 0;
@@ -36,15 +37,28 @@ void init(uint8_t *const src, size_t length)
     }
 }
 
-void bench(void (*target)(const uint8_t *src, float *dst, size_t length), const char* const label)
+void bench(void (*target)(const uint8_t *src, float *dst, size_t length), const char* const label, size_t count, int log)
 {
-    float startTime = (float)clock()/CLOCKS_PER_SEC;
+    char* filename = malloc(sizeof(char) * 30);
+    sprintf(filename, "%s.csv", label);
+    FILE* file = fopen(filename, "w");
 
-    (*target)(src_arr, buf, LENGTH);
+    for (size_t i = 0; i < count; i++)
+    {
+        float startTime = (float)clock()/CLOCKS_PER_SEC;
 
-    float endTime = (float)clock()/CLOCKS_PER_SEC;
+        (*target)(src_arr, buf, LENGTH);
 
-    printf("%s: %fs\n", label, endTime - startTime);
+        float endTime = (float)clock()/CLOCKS_PER_SEC;
+
+        fprintf(file, "%f\n", endTime - startTime);
+        if (log)
+        {
+            printf("(%d/%d)%s: %fs\n", i+1, count, label, endTime - startTime);
+        }
+    }
+
+    fclose(file);
 }
 
 void general(const uint8_t *src, float *dst, size_t length)
