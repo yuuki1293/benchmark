@@ -6,6 +6,7 @@
 #include <immintrin.h>
 #include "main.h"
 
+#define LOG 1
 #define LENGTH 67108864
 #define CNT 256
 
@@ -17,14 +18,14 @@ int main()
 {
     init(src_arr, LENGTH);
 
-    bench(general, "general", CNT, 1);
-    bench(look_up_list, "lut", CNT, 1);
-    bench(avx, "avx", CNT, 1);
+    bench(general, "general", CNT);
+    bench(look_up_table, "lut", CNT);
+    bench(avx, "avx", CNT);
 #ifdef __AVX2__
-    bench(avx2, "avx2", CNT, 1);
+    bench(avx2, "avx2", CNT);
 #endif
 #ifdef __AVX512F__
-    bench(avx512, "avx512", CNT, 1);
+    bench(avx512, "avx512", CNT);
 #endif
 
     return 0;
@@ -39,7 +40,7 @@ void init(uint8_t *const src, int length)
     }
 }
 
-void bench(void (*target)(const uint8_t *src, float *dst, int length), const char* const label, int count, int log)
+void bench(void (*target)(const uint8_t *src, float *dst, int length), const char* const label, int count)
 {
     int i;
     char* filename = malloc(sizeof(char) * 30);
@@ -58,10 +59,9 @@ void bench(void (*target)(const uint8_t *src, float *dst, int length), const cha
         endTime = (float)clock()/CLOCKS_PER_SEC;
 
         fprintf(file, "%f\n", endTime - startTime);
-        if (log)
-        {
-            printf("(%d/%d)%s: %fs\n", i+1, count, label, endTime - startTime);
-        }
+#ifdef LOG
+        printf("(%d/%d)%s: %fs\n", i+1, count, label, endTime - startTime);
+#endif
     }
 
     fclose(file);

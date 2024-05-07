@@ -7,7 +7,7 @@
 
 void init(uint8_t *const src, int length);
 
-void bench(void (*target)(const uint8_t *src, float *dst, int length), const char* const label, int count, int log);
+void bench(void (*target)(const uint8_t *src, float *dst, int length), const char* const label, int count);
 
 void general(const uint8_t *src, float *dst, int length);
 
