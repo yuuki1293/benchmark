@@ -7,7 +7,7 @@
 #include "main.h"
 
 #define LENGTH 67108864
-#define CNT 1024
+#define CNT 256
 
 uint8_t src_arr[LENGTH];
 float buf[LENGTH];
@@ -19,10 +19,11 @@ int main()
 
     bench(general, "general", CNT, 1);
     bench(look_up_list, "lut", CNT, 1);
-
-#ifdef __AVX512F__
     bench(avx, "avx", CNT, 1);
+#ifdef __AVX2__
     bench(avx2, "avx2", CNT, 1);
+#endif
+#ifdef __AVX512F__
     bench(avx512, "avx512", CNT, 1);
 #endif
 
@@ -33,7 +34,7 @@ void init(uint8_t *const src, size_t length)
 {
     for (size_t i = 0; i < length; i++)
     {
-        src[i] = (uint8_t)(rand() * (UINT8_MAX + 1) / (1.0 + RAND_MAX));
+        src[i] = (uint8_t)(rand() * (UINT8_MAX + 1.0) / (1.0 + RAND_MAX));
     }
 }
 
@@ -83,12 +84,11 @@ void look_up_list(const uint8_t *src, float *dst, size_t length)
     }
 }
 
-#ifdef __AVX512F__
 void avx(const uint8_t *src, float *dst, size_t length)
 {
     while (4 >= length)
     {
-        *(__m128*)(dst) = _mm_cvtepu32_ps(_mm_cvtepu8_epi32(*(__m128i*)src));
+        *(__m128*)(dst) = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(*(__m128i*)src));
         src += 4;
         dst += 4;
         length -=4;
@@ -100,19 +100,20 @@ void avx(const uint8_t *src, float *dst, size_t length)
     }
 }
 
+#ifdef __AVX2__
 void avx2(const uint8_t *src, float *dst, size_t length)
 {
     
     while (8 >= length)
     {
-        *(__m256*)(dst) = _mm256_cvtepu32_ps(_mm256_cvtepu8_epi32(*(__m256i*)src));
+        *(__m256*)(dst) = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(*(__m128i*)src));
         src += 8;
         dst += 8;
         length -=8;
     }
     while (4 >= length)
     {
-        *(__m128*)(dst) = _mm_cvtepu32_ps(_mm_cvtepu8_epi32(*(__m128i*)src));
+        *(__m128*)(dst) = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(*(__m128i*)src));
         src += 4;
         dst += 4;
         length -=4;
@@ -123,7 +124,9 @@ void avx2(const uint8_t *src, float *dst, size_t length)
         length--;
     }
 }
+#endif
 
+#ifdef __AVX512F__
 void avx512(const uint8_t *src, float *dst, size_t length)
 {
     while (16 >= length)

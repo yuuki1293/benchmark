@@ -1,6 +1,12 @@
 {
     "files.associations": {
         "emmintrin.h": "c",
-        "string_view": "c"
-    }
+        "string_view": "c",
+        "immintrin.h": "c",
+        "avx2intrin.h": "c"
+    },
+    "C_Cpp.default.defines": [
+        "__AVX2__"
+    ],
+    "FSharp.inlayHints.parameterNames": false
 }
