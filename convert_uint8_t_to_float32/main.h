@@ -11,7 +11,7 @@ void bench(void (*target)(const uint8_t *src, float *dst, int length), const cha
 
 void general(const uint8_t *src, float *dst, int length);
 
-void look_up_list(const uint8_t *src, float *dst, int length);
+void look_up_table(const uint8_t *src, float *dst, int length);
 
 void avx(const uint8_t *src, float *dst, int length);
 
