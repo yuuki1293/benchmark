@@ -10,14 +10,13 @@
 #define LENGTH 67108864
 #define CNT 256
 
-uint8_t src_arr[LENGTH];
+uint8_t src_arr[LENGTH] __attribute__((aligned(16)));
 float buf[LENGTH];
 
 
 int main()
 {
     init(src_arr, LENGTH);
-
     bench(general, "general", CNT);
     bench(look_up_table, "lut", CNT);
     bench(avx, "avx", CNT);
@@ -91,14 +90,14 @@ void look_up_table(const uint8_t *src, float *dst, int length)
 
 void avx(const uint8_t *src, float *dst, int length)
 {
-    while (4 >= length)
+    while (4 <= length)
     {
-        *(__m128*)(dst) = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(*(__m128i*)src));
+        *(__m128*)(dst) = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(_mm_loadu_si128((__m128i*)src)));
         src += 4;
         dst += 4;
         length -=4;
     }
-    while (length > 0)
+    while (0 < length)
     {
         *dst++ = *src++;
         length--;
@@ -108,22 +107,21 @@ void avx(const uint8_t *src, float *dst, int length)
 #ifdef __AVX2__
 void avx2(const uint8_t *src, float *dst, int length)
 {
-    
-    while (8 >= length)
+    while (8 <= length)
     {
-        *(__m256*)(dst) = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(*(__m128i*)src));
+        *(__m256*)(dst) = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_loadu_si128((__m128i*)src)));
         src += 8;
         dst += 8;
         length -=8;
     }
-    while (4 >= length)
+    while (4 <= length)
     {
-        *(__m128*)(dst) = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(*(__m128i*)src));
+        *(__m128*)(dst) = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(_mm_loadu_si128((__m128i*)src)));
         src += 4;
         dst += 4;
         length -=4;
     }
-    while (length > 0)
+    while (0 < length)
     {
         *dst++ = *src++;
         length--;
@@ -134,28 +132,28 @@ void avx2(const uint8_t *src, float *dst, int length)
 #ifdef __AVX512F__
 void avx512(const uint8_t *src, float *dst, int length)
 {
-    while (16 >= length)
+    while (16 <= length)
     {
-        *(__mm512*)(dst) = _mm512_cvtepu32_ps(_mm512_cvtepu8_epi32(*(__m512i*)src));
+        *(__mm512*)(dst) = _mm512_cvtepu32_ps(_mm512_cvtepu8_epi32((__m512i*)src));
         src += 16;
         dst += 16;
         length -=16;
     }
-    while (8 >= length)
+    while (8 <= length)
     {
-        *(__m256*)(dst) = _mm256_cvtepu32_ps(_mm256_cvtepu8_epi32(*(__m256i*)src));
+        *(__m256*)(dst) = _mm256_cvtepu32_ps(_mm256_cvtepu8_epi32((__m256i*)src));
         src += 8;
         dst += 8;
         length -=8;
     }
-    while (4 >= length)
+    while (4 <= length)
     {
-        *(__m128*)(dst) = _mm_cvtepu32_ps(_mm_cvtepu8_epi32(*(__m128i*)src));
+        *(__m128*)(dst) = _mm_cvtepu32_ps(_mm_cvtepu8_epi32((__m128i*)src));
         src += 4;
         dst += 4;
         length -=4;
     }
-    while (length > 0)
+    while (0 < length)
     {
         *dst++ = *src++;
         length--;
