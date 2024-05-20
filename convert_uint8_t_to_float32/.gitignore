@@ -1,2 +1,4 @@
 *.csv
 .fake
+/bin
+/obj
