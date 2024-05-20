@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include <string.h>
 
-void bench(const char *const label, int count,
+void bench_a(const char *const label, int count,
              void (*target)(void *), void *arg,
              void (*pre)(void *), void *pre_arg,
              void (*post)(void *), void *post_arg,
