@@ -1,5 +1,4 @@
 open System.IO
-open System
 
 let path = "./"
 let out = "combine.csv"

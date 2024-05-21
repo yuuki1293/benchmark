@@ -8,8 +8,6 @@
     "C_Cpp.default.defines": [
         "__AVX2__"
     ],
-    "FSharp.inlayHints.parameterNames": false,
-    "C_Cpp.default.cStandard": "",
     "C_Cpp.default.includePath": [
         "${workspaceFolder}/lib/**"
     ]
