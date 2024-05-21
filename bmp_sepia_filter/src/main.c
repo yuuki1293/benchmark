@@ -73,6 +73,7 @@ void post_loop(void *_post_loop_args)
     struct image *image = args->image;
 
     save_bmp(image_name_o, header, image);
+    free(image->array);
 }
 
 void post(void *_post_args)
@@ -84,7 +85,7 @@ void post(void *_post_args)
 
 void apply_sepia_filter(void *_args)
 {
-    struct image *image = _args;
+    struct image *image = ((struct args*)_args)->image;
     int rest = image->height * image->width;
     struct pixel *pixels = image->array;
     int i = 0;
@@ -99,7 +100,7 @@ void apply_sepia_filter(void *_args)
 
 void apply_sepia_filter_avx(void *_args)
 {
-    struct image *image = _args;
+    struct image *image = ((struct args*)_args)->image;
     int rest = image->height * image->width;
     struct pixel *pixels = image->array;
     int i = 0;
@@ -182,7 +183,7 @@ static void mul_matrix_sepia(struct pixel *const p)
 
 void apply_sepia_filter_haxe(void *_args)
 {
-    struct image *image = _args;
+    struct image *image = ((struct args*)_args)->image;
     int rest = image->height * image->width;
     struct pixel *pixels = image->array;
     struct pixel *new_p = malloc(sizeof(struct pixel) * rest);
